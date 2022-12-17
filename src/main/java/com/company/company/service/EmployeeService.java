@@ -15,19 +15,15 @@ import java.util.Optional;
 @Service
 public class EmployeeService {
 
-
-
     @Autowired
     EmployeeRepository employeeRepository;
 
     public List<EmployeeDTO> getAllEmployees() {
         List<EmployeeEntity> entities = employeeRepository.findAll();
 
-        List<EmployeeDTO> employees = null;
+        List<EmployeeDTO> employees = new ArrayList<>();
 
         if(entities != null && entities.size() > 0) {
-            employees = new ArrayList<>();
-
             for(EmployeeEntity entity : entities) {
                 EmployeeAdaptor employeeAdaptor = new EmployeeAdaptor();
                 employees.add(employeeAdaptor.toDTO(entity));
@@ -38,7 +34,7 @@ public class EmployeeService {
 
     private EmployeeDTO findEmployeeById(int id) {
         Optional<EmployeeEntity> entity = employeeRepository.findById(id);
-        if (entity.isEmpty())
+        if (!entity.isPresent())
             return null;
         EmployeeAdaptor adaptor = new EmployeeAdaptor();
         return(adaptor.toDTO(entity.get()));
