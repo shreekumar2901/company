@@ -5,15 +5,14 @@ import com.company.company.dto.EmployeeDTO;
 import com.company.company.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/employees")
 public class EmployeeController {
 
 
@@ -21,12 +20,20 @@ public class EmployeeController {
     EmployeeService employeeService;
 
     @GetMapping("/")
-    public List<EmployeeDTO> getEmployees() {
+    public ResponseEntity<List<EmployeeDTO>> getEmployees() {
 
-        return employeeService.getAllEmployees();
+        List<EmployeeDTO> dtos = employeeService.getAllEmployees();
+        return new ResponseEntity<List<EmployeeDTO>>(dtos, HttpStatus.OK);
     }
 
     @PostMapping("/")
-    public
+    public ResponseEntity<String> postEmployee(@RequestBody EmployeeDTO dto) {
+        String response = employeeService.postEmployee(dto);
+
+        // TODO: have to implement controlleradvice for error handling
+        if (response.toLowerCase().contains("success"))
+            return new ResponseEntity<String>(response, HttpStatus.CREATED);
+        return new ResponseEntity<String>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
 }

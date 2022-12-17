@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -24,7 +25,7 @@ public class EmployeeService {
 
         List<EmployeeDTO> employees = null;
 
-        if(entities != null || entities.size() > 0) {
+        if(entities != null && entities.size() > 0) {
             employees = new ArrayList<>();
 
             for(EmployeeEntity entity : entities) {
@@ -34,4 +35,28 @@ public class EmployeeService {
         }
         return employees;
     }
+
+    private EmployeeDTO findEmployeeById(int id) {
+        Optional<EmployeeEntity> entity = employeeRepository.findById(id);
+        if (entity.isEmpty())
+            return null;
+        EmployeeAdaptor adaptor = new EmployeeAdaptor();
+        return(adaptor.toDTO(entity.get()));
+
+    }
+
+    public String postEmployee(EmployeeDTO dto) {
+        EmployeeAdaptor employeeAdaptor = new EmployeeAdaptor();
+        EmployeeEntity employeeEntity = employeeAdaptor.toEntity(dto);
+
+        try {
+            employeeRepository.save(employeeEntity);
+            return "Saved Successfully";
+        } catch(Exception e) {
+            e.printStackTrace();
+            return "Some error occurred while saving. Please try again.";
+        }
+    }
+
+
 }
